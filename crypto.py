@@ -20,6 +20,24 @@ generic_alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
                     's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 
+def _generic_rotate(my_bytes, n):
+    """
+    Parameters
+    ----------
+    my_bytes: bytes
+    n: int
+    """
+    shifted_bytes = []
+    for i in range(len(my_bytes)):
+        if my_bytes[i] <= 122 and my_bytes[i] >= 97:
+            shifted_bytes.append(((my_bytes[i] - 97) + n) % 26 + 97)
+        elif my_bytes[i] <= 90 and my_bytes[i] >= 65:
+            shifted_bytes.append(((my_bytes[i] - 65) + n) % 26 + 65)
+        else:
+            shifted_bytes.append(my_bytes[i])
+    return bytes(shifted_bytes)
+
+
 class Cipher(object):
     """
     The Cipher class has functionalities such as encrypt and decrypt the ciphertext.
@@ -86,4 +104,31 @@ class CaesarCipher(Cipher):
     def decrypt(self, ciphertext):
         rotated_alphabet = _rotate(generic_alphabet, -self.shift)
         return ''.join([rotated_alphabet[generic_alphabet.index(x)] for x in ciphertext])
+
+
+class CaesarCipherGeneric(Cipher):
+
+    def __init__(self, shift, **kwargs):
+        super().__init__(**kwargs)
+        self.shift = shift
+
+    def encrypt(self, plaintext):
+        if isinstance(plaintext, str):
+            my_bytes = plaintext.encode()
+        elif isinstance(plaintext, bytes):
+            my_bytes = plaintext
+        else:
+            raise ValueError('Input file for plaintext should be in the format of eighter string or bytes.')
+        rotated_bytes = _generic_rotate(my_bytes, self.shift)
+        return rotated_bytes.decode('utf-8')
+
+    def decrypt(self, ciphertext):
+        if isinstance(plaintext, str):
+            my_bytes = plaintext.encode()
+        elif isinstance(plaintext, bytes):
+            my_bytes = plaintext
+        else:
+            raise ValueError('Input file for ciphertext should be in the format of eighter string or bytes.')
+        rotated_bytes = _generic_rotate(my_bytes, -self.shift)
+        return rotated_bytes.decode('utf-8')
 

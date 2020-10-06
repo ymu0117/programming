@@ -1,5 +1,5 @@
 import pytest
-from sans_program_project.crypto import ReverseCipher, ReverseCipherByte, CaesarCipher
+from sans_program_project.crypto import ReverseCipher, ReverseCipherByte, CaesarCipher, CaesarCipherGeneric
 
 
 def test_ReverseCipher():
@@ -13,4 +13,8 @@ def test_ReverseCipher():
     assert inst.encrypt('abyz') == 'debc'
 
     assert inst.decrypt('debc') == 'abyz'
+
+    inst = CaesarCipherGeneric(shift=3)
+
+    assert inst.encrypt('Hello, World!') == 'Khoor, Zruog!'
 
