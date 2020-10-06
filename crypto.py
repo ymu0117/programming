@@ -123,10 +123,10 @@ class CaesarCipherGeneric(Cipher):
         return rotated_bytes.decode('utf-8')
 
     def decrypt(self, ciphertext):
-        if isinstance(plaintext, str):
-            my_bytes = plaintext.encode()
-        elif isinstance(plaintext, bytes):
-            my_bytes = plaintext
+        if isinstance(ciphertext, str):
+            my_bytes = ciphertext.encode()
+        elif isinstance(ciphertext, bytes):
+            my_bytes = ciphertext
         else:
             raise ValueError('Input file for ciphertext should be in the format of eighter string or bytes.')
         rotated_bytes = _generic_rotate(my_bytes, -self.shift)

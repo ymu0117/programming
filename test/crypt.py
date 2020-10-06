@@ -18,3 +18,12 @@ def test_ReverseCipher():
 
     assert inst.encrypt('Hello, World!') == 'Khoor, Zruog!'
 
+    inst = CaesarCipherGeneric(shift=20)
+
+    assert inst.encrypt('Hello, World!') == 'Byffi, Qilfx!'
+
+    inst = CaesarCipherGeneric(shift=46)
+
+    assert inst.encrypt('Hello, World!') == 'Byffi, Qilfx!'
+
+    assert inst.decrypt('Byffi, Qilfx!') == 'Hello, World!'
