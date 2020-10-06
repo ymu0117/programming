@@ -16,14 +16,18 @@ def test_ReverseCipher():
 
     inst = CaesarCipherGeneric(shift=3)
 
-    assert inst.encrypt('Hello, World!') == 'Khoor, Zruog!'
+    # inst.gen_keys()
+    password = '2M8BJi^#'
+
+    assert inst.encrypt('Hello, World!', password) == 'Khoor, Zruog!'
 
     inst = CaesarCipherGeneric(shift=20)
 
-    assert inst.encrypt('Hello, World!') == 'Byffi, Qilfx!'
+    assert inst.encrypt('Hello, World!', password) == 'Byffi, Qilfx!'
 
     inst = CaesarCipherGeneric(shift=46)
 
-    assert inst.encrypt('Hello, World!') == 'Byffi, Qilfx!'
+    assert inst.encrypt('Hello, World!', password) == 'Byffi, Qilfx!'
 
-    assert inst.decrypt('Byffi, Qilfx!') == 'Hello, World!'
+    assert inst.decrypt('Byffi, Qilfx!', password) == 'Hello, World!'
+

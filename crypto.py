@@ -1,3 +1,7 @@
+import os
+import yaml
+
+from random import choice
 
 
 def _reverseCipher(plaintext):
@@ -108,11 +112,40 @@ class CaesarCipher(Cipher):
 
 class CaesarCipherGeneric(Cipher):
 
-    def __init__(self, shift, **kwargs):
+    def __init__(self, shift, n_keys=8, **kwargs):
         super().__init__(**kwargs)
         self.shift = shift
+        self.n_keys = n_keys
+        self.kfile = os.path.dirname(os.path.realpath(__file__))
 
-    def encrypt(self, plaintext):
+    def gen_keys(self, keys=None):
+        if keys is None:
+            chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_!@#$%^&*abcdefghijklmnopqrstuvwxyz'
+            keys = ''.join(choice(chars) for _ in range(self.n_keys))
+            pwd_dict = {'password': keys}
+        else:
+            if isinstance(keys, str):
+                pwd_dict = {'password': keys}
+            else:
+                raise ValueError('Input keys needs to be in the string format.')
+
+        with open(self.kfile+'/key.yaml', 'w') as file:
+            yaml.dump(pwd_dict, file)
+
+    def compare_keys(self, input_keys):
+        with open(self.kfile+'/key.yaml') as file:
+            keys = yaml.load(file)
+        if input_keys == keys['password']:
+            return True
+        else:
+            return False
+
+    def encrypt(self, plaintext, keys):
+        if self.compare_keys(keys):
+            print('Password is correct!')
+        else:
+            raise ValueError('Password is incorrect.')
+
         if isinstance(plaintext, str):
             my_bytes = plaintext.encode()
         elif isinstance(plaintext, bytes):
@@ -122,7 +155,12 @@ class CaesarCipherGeneric(Cipher):
         rotated_bytes = _generic_rotate(my_bytes, self.shift)
         return rotated_bytes.decode('utf-8')
 
-    def decrypt(self, ciphertext):
+    def decrypt(self, ciphertext, keys):
+        if self.compare_keys(keys):
+            print('Password is correct!')
+        else:
+            raise ValueError('Password is incorrect.')
+
         if isinstance(ciphertext, str):
             my_bytes = ciphertext.encode()
         elif isinstance(ciphertext, bytes):
