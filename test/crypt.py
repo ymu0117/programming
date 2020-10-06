@@ -1,8 +1,8 @@
-import pytest 
+import pytest
 from sans_program_project.crypto import ReverseCipher, ReverseCipherByte, CaesarCipher
 
 
-def test_ReverseCipher(): 
+def test_ReverseCipher():
     plaintext = 'hello world'
     assert ReverseCipher.encrypt(plaintext) == 'dlrow olleh'
 
@@ -14,5 +14,3 @@ def test_ReverseCipher():
 
     assert inst.decrypt('debc') == 'abyz'
 
-
-    
