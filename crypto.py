@@ -3,8 +3,12 @@ import yaml
 
 from random import choice
 
+from sans_program_project.cipher import Cipher
+
 
 def _reverseCipher(plaintext):
+    # ciphertext = list(reversed(plaintext))
+    # return ''.join(ciphertext)
     ciphertext = plaintext[::-1]
     return ciphertext
 
@@ -40,20 +44,6 @@ def _generic_rotate(my_bytes, n):
         else:
             shifted_bytes.append(my_bytes[i])
     return bytes(shifted_bytes)
-
-
-class Cipher(object):
-    """
-    The Cipher class has functionalities such as encrypt and decrypt the ciphertext.
-    """
-    def __init__(self, key=None):
-        self.key = key
-
-    def encrypt(self):
-        raise NotImplementedError
-
-    def decrypt(self):
-        raise NotImplementedError
 
 
 class ReverseCipher(Cipher):
