@@ -15,7 +15,9 @@ def _caesar_encrypt(my_bytes, n_shift):
     my_bytes: bytes
     n_shift: int
     """
-    shifted_bytes = [my_bytes[x] + n_shift for x in range(len(my_bytes))]
+    shifted_bytes = []
+    for i in range(len(my_bytes)):
+        shifted_bytes.append((my_bytes[i] + n_shift) % 128)
     return bytes(shifted_bytes)
 
 
