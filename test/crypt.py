@@ -1,33 +1,24 @@
 import pytest
-from sans_program_project.crypto import ReverseCipher, ReverseCipherByte, CaesarCipher, CaesarCipherGeneric
+from sans_program_project.crypto import ReverseCipher, ReverseCipherByte, CaesarCipher
 
 
 def test_ReverseCipher():
     plaintext = 'hello world'
-    assert ReverseCipher.encrypt(plaintext) == 'dlrow olleh'
+    inst = ReverseCipher()
+    assert inst.encrypt(plaintext) == 'dlrow olleh'
 
-    assert ReverseCipherByte.encrypt(plaintext) == b'dlrow olleh'
 
-    inst = CaesarCipher(shift=3)
+def test_ReverseCipherBytes():
+    plaintext = 'hello world'
+    inst = ReverseCipherByte()
+    assert inst.encrypt(plaintext) == 'dlrow olleh'
 
-    assert inst.encrypt('abyz') == 'debc'
 
-    assert inst.decrypt('debc') == 'abyz'
+def test_CaesarCipher():
+    inst1 = CaesarCipher(key=3)
+    assert inst1.encrypt('abcd') == 'defg'
+    assert inst1.decrypt('defg') == 'abcd'
 
-    inst = CaesarCipherGeneric(shift=3)
-
-    # inst.gen_keys()
-    password = '2M8BJi^#'
-
-    assert inst.encrypt('Hello, World!', password) == 'Khoor, Zruog!'
-
-    inst = CaesarCipherGeneric(shift=20)
-
-    assert inst.encrypt('Hello, World!', password) == 'Byffi, Qilfx!'
-
-    inst = CaesarCipherGeneric(shift=46)
-
-    assert inst.encrypt('Hello, World!', password) == 'Byffi, Qilfx!'
-
-    assert inst.decrypt('Byffi, Qilfx!', password) == 'Hello, World!'
-
+    inst2 = CaesarCipher(key=3)
+    assert inst2.encrypt('Hello, World!') == 'Khoor/#Zruog$'
+    assert inst2.decrypt('Khoor/#Zruog$') == 'Hello, World!'
