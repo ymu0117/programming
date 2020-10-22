@@ -1,4 +1,4 @@
-from sans_program_project.cipher import Cipher
+from sans_program_project.cipher.cipher import Cipher
 
 
 def _reverseCipher(plaintext):
@@ -83,3 +83,4 @@ class CaesarCipher(Cipher):
 
         shifted_bytes = _caesar_encrypt(my_bytes, -self.key)
         return shifted_bytes.decode('utf-8')
+
