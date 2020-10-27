@@ -5,7 +5,6 @@ class Cipher(ABC):
     """
     Base class for cryptocryphy
     """
-    @abstractmethod
     def __init__(self):
         pass
 
