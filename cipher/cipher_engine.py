@@ -17,8 +17,18 @@ def _caesar_encrypt(my_bytes, n_shift):
     """
     shifted_bytes = []
     for i in range(len(my_bytes)):
-        shifted_bytes.append((my_bytes[i] + n_shift) % 128)
+        shifted_bytes.append((my_bytes[i] + n_shift) % 128)      # utf-8 can only decode first 128 
     return bytes(shifted_bytes)
+
+
+def _text2bytes(text):
+    if isinstance(text, str):
+        my_bytes = text.encode()
+    elif isinstance(text, bytes):
+        my_bytes = text
+    else:
+        raise ValueError('Input file for text should be in the format of eighter string or bytes.')
+    return my_bytes 
 
 
 class ReverseCipher(Cipher):
@@ -63,24 +73,16 @@ class CaesarCipher(Cipher):
         self.key = key
 
     def encrypt(self, plaintext):
-        if isinstance(plaintext, str):
-            my_bytes = plaintext.encode()
-        elif isinstance(plaintext, bytes):
-            my_bytes = plaintext
-        else:
-            raise ValueError('Input file for plaintext should be in the format of eighter string or bytes.')
-
+        my_bytes = _text2bytes(plaintext)
+        
         shifted_bytes = _caesar_encrypt(my_bytes, self.key)
+
         return shifted_bytes.decode('utf-8')
 
     def decrypt(self, ciphertext):
-        if isinstance(ciphertext, str):
-            my_bytes = ciphertext.encode()
-        elif isinstance(ciphertext, bytes):
-            my_bytes = ciphertext
-        else:
-            raise ValueError('Input file for ciphertext should be in the format of eighter string or bytes.')
+        my_bytes = _text2bytes(ciphertext)
 
         shifted_bytes = _caesar_encrypt(my_bytes, -self.key)
+
         return shifted_bytes.decode('utf-8')
 

@@ -1,6 +1,7 @@
 import pytest
 from sans_program_project.cipher import cipher_engine
-from sans_program_project.cipher.cipher import Cipher 
+from sans_program_project.cipher.cipher import Cipher
+from sans_program_project.cipher.cipher_hacker import cipher_hacker 
 
 
 def test_ReverseCipher():
@@ -35,5 +36,13 @@ def test_CaesarCipher():
     inst5 = cipher_engine.CaesarCipher(key=3000)
     test = inst5.encrypt('Hello, World!')
     inst5.decrypt(test) == 'Hello, World!'
+
+
+def test_cipher_hacker():
+    plaintext = 'hello world'
+    inst = cipher_engine.CaesarCipher(key=5)
+    ciphertext = inst.encrypt(plaintext)
+
+    cipher_hacker(plaintext, ciphertext)
 
     
