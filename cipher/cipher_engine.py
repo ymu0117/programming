@@ -10,19 +10,21 @@ def _caesar_encrypt(text, key):
     """
     Parameters
     ----------
-    text: string text 
-        
+    text: text needed to be encrypted; string
+    key: key used to encrypt; int 
+    
     Returns 
     -------
-    shifted_str: string text after shifted code points.
+    shifted_str: text after shifted code points; string 
     """
-    shifted_cp = []     # shifted code point 
+    code_points = []     # shifted code point 
     for t in text:
         if ord(t) > 1114111:
             raise ValueError('The input character is beyond the range of Unicode encoding.')
-        shifted_cp.append((ord(t) + key) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points  
-    shifted_str = ''.join([chr(x) for x in shifted_cp])
-    return shifted_str
+        code_points.append((ord(t) + key) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points  
+
+    encrypted_text = ''.join([chr(x) for x in code_points])
+    return encrypted_text
 
 
 class ReverseCipher(Cipher):
@@ -69,14 +71,15 @@ class CaesarCipher(Cipher):
         self.key = key
 
     def encrypt(self, plaintext):
+        if not isinstance(plaintext, str):
+            raise ValueError('Plaintext must be in string format.')
 
-        shifted_str = _caesar_encrypt(plaintext, self.key)
-
-        return shifted_str 
+        return _caesar_encrypt(plaintext, self.key)
 
     def decrypt(self, ciphertext):
+        if not isinstance(ciphertext, str):
+            raise ValueError('Ciphertext must be in string format.')
 
-        shifted_str = _caesar_encrypt(ciphertext, -self.key)
+        return _caesar_encrypt(ciphertext, -self.key)
 
-        return shifted_str 
 
