@@ -1,34 +1,9 @@
-from sans_program_project.cipher.cipher import Cipher
+from programming.cipher.cipher import Cipher
 
 
 def _reverseCipher(plaintext):
-    # ciphertext = list(reversed(plaintext))
-    # return ''.join(ciphertext)
     ciphertext = plaintext[::-1]
     return ciphertext
-
-
-def _caesar_encrypt(my_bytes, n_shift):
-    """
-    Parameters
-    ----------
-    my_bytes: bytes
-    n_shift: int
-    """
-    shifted_bytes = []
-    for i in range(len(my_bytes)):
-        shifted_bytes.append((my_bytes[i] + n_shift) % 128)      # utf-8 can only decode first 128 
-    return bytes(shifted_bytes)
-
-
-def _text2bytes(text):
-    if isinstance(text, str):
-        my_bytes = text.encode()
-    elif isinstance(text, bytes):
-        my_bytes = text
-    else:
-        raise ValueError('Input file for text should be in the format of eighter string or bytes.')
-    return my_bytes 
 
 
 class ReverseCipher(Cipher):
@@ -70,19 +45,57 @@ class CaesarCipher(Cipher):
     """
     def __init__(self, key, **kwargs):
         super().__init__(**kwargs)
+        if key < 0:
+            raise ValueError('Key has to be positive.')
         self.key = key
 
-    def encrypt(self, plaintext):
-        my_bytes = _text2bytes(plaintext)
-        
-        shifted_bytes = _caesar_encrypt(my_bytes, self.key)
+    def caesar_encrypt(self, text):
+        """
+        Parameters
+        ----------
+        text: string text 
+            
+        Returns 
+        -------
+        shifted_str: string text after shifted code points.
+        """
+        shifted_cp = []     # shifted code point 
+        for t in text:
+            if ord(t) > 1114111:
+                raise ValueError('The input character is beyond the range of Unicode encoding.')
+    
+            shifted_cp.append((ord(t) + self.key) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points  
+        shifted_str = ''.join([chr(x) for x in shifted_cp])
+        return shifted_str
 
-        return shifted_bytes.decode('utf-8')
+    def caesar_decrypt(self, text):
+        """
+        Parameters
+        ----------
+        text: string text 
+            
+        Returns 
+        -------
+        shifted_str: string text after shifted code points.
+        """
+        shifted_cp = []     # shifted code point 
+        for t in text:
+            if ord(t) > 1114111:
+                raise ValueError('The input character is beyond the range of Unicode encoding.')
+    
+            shifted_cp.append((ord(t) - self.key) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points  
+        shifted_str = ''.join([chr(x) for x in shifted_cp])
+        return shifted_str
+
+    def encrypt(self, plaintext):
+
+        shifted_str = self.caesar_encrypt(plaintext)
+
+        return shifted_str 
 
     def decrypt(self, ciphertext):
-        my_bytes = _text2bytes(ciphertext)
 
-        shifted_bytes = _caesar_encrypt(my_bytes, -self.key)
+        shifted_str = self.caesar_decrypt(ciphertext)
 
-        return shifted_bytes.decode('utf-8')
+        return shifted_str 
 
