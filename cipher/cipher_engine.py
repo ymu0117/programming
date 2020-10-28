@@ -6,6 +6,25 @@ def _reverseCipher(plaintext):
     return ciphertext
 
 
+def _caesar_encrypt(text, key):
+    """
+    Parameters
+    ----------
+    text: string text 
+        
+    Returns 
+    -------
+    shifted_str: string text after shifted code points.
+    """
+    shifted_cp = []     # shifted code point 
+    for t in text:
+        if ord(t) > 1114111:
+            raise ValueError('The input character is beyond the range of Unicode encoding.')
+        shifted_cp.append((ord(t) + key) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points  
+    shifted_str = ''.join([chr(x) for x in shifted_cp])
+    return shifted_str
+
+
 class ReverseCipher(Cipher):
     """
     Using simplest cryptography algorithm, the reverse cipher.
@@ -49,53 +68,15 @@ class CaesarCipher(Cipher):
             raise ValueError('Key has to be positive.')
         self.key = key
 
-    def caesar_encrypt(self, text):
-        """
-        Parameters
-        ----------
-        text: string text 
-            
-        Returns 
-        -------
-        shifted_str: string text after shifted code points.
-        """
-        shifted_cp = []     # shifted code point 
-        for t in text:
-            if ord(t) > 1114111:
-                raise ValueError('The input character is beyond the range of Unicode encoding.')
-    
-            shifted_cp.append((ord(t) + self.key) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points  
-        shifted_str = ''.join([chr(x) for x in shifted_cp])
-        return shifted_str
-
-    def caesar_decrypt(self, text):
-        """
-        Parameters
-        ----------
-        text: string text 
-            
-        Returns 
-        -------
-        shifted_str: string text after shifted code points.
-        """
-        shifted_cp = []     # shifted code point 
-        for t in text:
-            if ord(t) > 1114111:
-                raise ValueError('The input character is beyond the range of Unicode encoding.')
-    
-            shifted_cp.append((ord(t) - self.key) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points  
-        shifted_str = ''.join([chr(x) for x in shifted_cp])
-        return shifted_str
-
     def encrypt(self, plaintext):
 
-        shifted_str = self.caesar_encrypt(plaintext)
+        shifted_str = _caesar_encrypt(plaintext, self.key)
 
         return shifted_str 
 
     def decrypt(self, ciphertext):
 
-        shifted_str = self.caesar_decrypt(ciphertext)
+        shifted_str = _caesar_encrypt(ciphertext, -self.key)
 
         return shifted_str 
 
