@@ -54,27 +54,28 @@ class CaesarCipher(Cipher):
         Parameters
         ----------
         text: text needed to be encrypted; string
-        n: number we need to add to code points of characters; int 
-        
-        Returns 
+        n: number we need to add to code points of characters; int
+
+        Returns
         -------
-        code_points: shifted code points; string 
+        code_points: shifted code points; string
         """
-        code_points = []     # shifted code point 
+        code_points = []     # shifted code point
         for t in text:
             if ord(t) > 1114111:
                 raise ValueError('The input character is beyond the range of Unicode encoding.')
             code_points.append((ord(t) + n) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points
 
-        return code_points 
-    
+        return code_points
+
     def encrypt(self, plaintext):
         if not isinstance(plaintext, str):
             raise ValueError('Plaintext must be in string format.')
 
         code_points = self.shift_code_points(plaintext, self.key)
-
-        return ''.join([chr(x) for x in code_points])
+        import pdb; pdb.set_trace()
+        # return ''.join([chr(x) for x in code_points])
+        print("done")
 
     def decrypt(self, ciphertext):
         if not isinstance(ciphertext, str):
@@ -83,5 +84,4 @@ class CaesarCipher(Cipher):
         code_points = self.shift_code_points(ciphertext, -self.key)
 
         return ''.join([chr(x) for x in code_points)
-
 
