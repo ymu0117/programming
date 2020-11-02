@@ -73,9 +73,8 @@ class CaesarCipher(Cipher):
             raise ValueError('Plaintext must be in string format.')
 
         code_points = self.shift_code_points(plaintext, self.key)
-        import pdb; pdb.set_trace()
-        # return ''.join([chr(x) for x in code_points])
-        print("done")
+
+        return ''.join([chr(x) for x in code_points])
 
     def decrypt(self, ciphertext):
         if not isinstance(ciphertext, str):
@@ -83,5 +82,4 @@ class CaesarCipher(Cipher):
 
         code_points = self.shift_code_points(ciphertext, -self.key)
 
-        return ''.join([chr(x) for x in code_points)
-
+        return ''.join([chr(x) for x in code_points])
