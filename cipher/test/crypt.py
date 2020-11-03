@@ -2,7 +2,7 @@ import pytest
 from programming.cipher import cipher_engine
 from programming.cipher.base import Cipher
 from programming.cipher.cipher_hacker import CipherHackerBruteForce
-from programming.cipher.word import load_dictionary
+from programming.cipher.word import load_dictionary, load_Webster
 
 
 def test_ReverseCipher():
@@ -116,3 +116,37 @@ def test_CipherHackerBruteForce_emoji_key50():
     key_list = [x for x in keys.keys()]
     assert 2 in key_list
     
+
+def test_CipherHackerBruteForce_Webster():
+    plaintext = 'hello world'
+    inst = cipher_engine.CaesarCipher(key=10)
+    ciphertext = inst.encrypt(plaintext)
+    # load Webster dictionary
+    path = '/Users/yumu/Desktop/programming/programming/cipher/dictionary.json'
+    dictionary = load_Webster(path)
+    inst = CipherHackerBruteForce(dictionary,
+                                  percent=0.5,
+                                  key_range=2000,
+                                  separator=' ')
+    keys = inst.hacking(ciphertext)
+    key_list = [x for x in keys.keys()]
+    assert 10 in key_list 
+
+
+def test_CipherHackerBruteForce_paragraph():
+    plaintext = ("Kerckhoffs principle is one of the basic principles of modern cryptography. "
+                 "It was formulated in the end of the nineteenth century by Dutch cryptographer Auguste Kerckhoffs. "
+                 "The principle goes as follows: A cryptographic system should be secure even if everything about the system, "
+                 "except the key, is public knowledge.")
+    inst = cipher_engine.CaesarCipher(key=200)
+    ciphertext = inst.encrypt(plaintext)
+    # load Webster dictionary
+    path = '/Users/yumu/Desktop/programming/programming/cipher/dictionary.json'
+    dictionary = load_Webster(path)
+    inst = CipherHackerBruteForce(dictionary,
+                                  percent=0.5,
+                                  key_range=2000,
+                                  separator=' ')
+    keys = inst.hacking(ciphertext)
+    key_list = [x for x in keys.keys()]
+    assert 200 in key_list 

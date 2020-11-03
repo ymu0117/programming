@@ -24,7 +24,7 @@ class CipherHackerBruteForce(Hacker):
     def calc_percent(self, words):
         count = 0 
         for x in words:
-            if x in self.dictionary:
+            if x.lower() in self.dictionary:
                 count += 1
             else:
                 continue
