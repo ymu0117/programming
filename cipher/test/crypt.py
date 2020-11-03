@@ -97,3 +97,22 @@ def test_CipherHackerBruteForce_helloworld_key1000():
 
     key_list = [x for x in keys.keys()]
     assert 1000 in key_list
+
+
+def test_CipherHackerBruteForce_emoji_key50():
+    plaintext = 'hello world \U0001f600 \U0001F606 \U0001F923'
+    inst = cipher_engine.CaesarCipher(key=2)
+    ciphertext = inst.encrypt(plaintext)
+    # load dictionary 
+    path = '/Users/yumu/Desktop/programming/programming/cipher/dictionary.yaml'
+    dictionary = load_dictionary(path)
+    inst = CipherHackerBruteForce(dictionary,
+                                  percent=0.5,
+                                  key_range=2000,
+                                  separator=' ')
+
+    keys = inst.hacking(ciphertext)
+
+    key_list = [x for x in keys.keys()]
+    assert 2 in key_list
+    

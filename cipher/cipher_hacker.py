@@ -44,7 +44,6 @@ class CipherHackerBruteForce(Hacker):
         return potential_keys 
 
 
-    
 
 
 
