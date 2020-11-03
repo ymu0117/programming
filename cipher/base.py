@@ -15,3 +15,16 @@ class Cipher(ABC):
     @abstractmethod
     def decrypt(self):
         pass
+
+
+class Hacker(ABC):
+    """
+    Base class for hacking ciphertext 
+    """
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def hacking(self):
+        pass 
+
