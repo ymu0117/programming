@@ -1,7 +1,8 @@
 import pytest
 from programming.cipher import cipher_engine
-from programming.cipher.cipher import Cipher
-from programming.cipher.cipher_hacker import cipher_hacker
+from programming.cipher.base import Cipher
+from programming.cipher.cipher_hacker import CipherHackerBruteForce
+from programming.cipher.word import load_dictionary
 
 
 def test_ReverseCipher():
@@ -60,6 +61,39 @@ def test_CaesarCipher_Emojis():
     assert inst7.decrypt(test) == plaintext
 
 
-def test_cipher_hacker():
-    pass
+def test_CipherHackerBruteForce_helloworld():
+    plaintext = 'hello world'
+    inst = cipher_engine.CaesarCipher(key=5)
+    ciphertext = inst.encrypt(plaintext)
+    # load dictionary 
+    path = '/Users/yumu/Desktop/programming/programming/cipher/dictionary.yaml'
+    dictionary = load_dictionary(path)
+    
+    inst = CipherHackerBruteForce(dictionary,
+                                  percent=0.5,
+                                  key_range=20,
+                                  separator=' ')
 
+    keys = inst.hacking(ciphertext)
+
+    key_list = [x for x in keys.keys()]
+    assert 5 in key_list 
+
+
+def test_CipherHackerBruteForce_helloworld_key1000():
+    plaintext = 'hello world'
+    inst = cipher_engine.CaesarCipher(key=1000)
+    ciphertext = inst.encrypt(plaintext)
+    # load dictionary 
+    path = '/Users/yumu/Desktop/programming/programming/cipher/dictionary.yaml'
+    dictionary = load_dictionary(path)
+    
+    inst = CipherHackerBruteForce(dictionary,
+                                  percent=0.5,
+                                  key_range=2000,
+                                  separator=' ')
+
+    keys = inst.hacking(ciphertext)
+
+    key_list = [x for x in keys.keys()]
+    assert 1000 in key_list
