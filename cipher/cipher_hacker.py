@@ -26,8 +26,6 @@ class CipherHackerBruteForce(Hacker):
         for x in words:
             if x.lower() in self.dictionary:
                 count += 1
-            else:
-                continue
         return count / len(words) 
 
     def hacking(self, ciphertext):
@@ -39,13 +37,4 @@ class CipherHackerBruteForce(Hacker):
             words_percent = self.calc_percent(words)
             if words_percent > self.percent: 
                 potential_keys[k] = "{:.0%}".format(words_percent)
-            else:
-                continue
-        return potential_keys 
-
-
-
-
-
-
-    
+        return potential_keys

@@ -11,16 +11,4 @@ def load_dictionary(path):
 def load_Webster(path):
     """Load Webster dictionary in json format."""
     dictionary = json.load(open(path))
-    return dictionary 
-
-
-
-
-
-
-
-
-
-
-
-    
+    return dictionary
