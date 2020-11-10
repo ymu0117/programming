@@ -1,40 +1,26 @@
 from programming.cipher.base import Hacker
 from programming.cipher.cipher_engine import _shift_code_points
+from collections import defaultdict 
 
 
-class CipherHackerBruteForce(Hacker):
+def calc_percent(words, dictionary):
+    count = 0
+    for x in words:
+        if x.lower() in dictionary:
+            count += 1
+    return count / len(words) 
+
+
+def bruteforcehacking(my_bytes, dictionary, percent, key_range):
     """
-    Class for hacking cipher 
-
-    Parameters 
-    ----------
-    dictionary: dict, dictionary used to detect plain english after hacking  
-    percent: float, percentage of plain english amoung all text
-    key_range: int, the range of key used for hacking 
-    separator: str, the separator used for splitting words 
+    Hacking cipher bytes using brute force method 
     """
-
-    def __init__(self, dictionary, percent, key_range, separator, **kwargs):
-        super().__init__(**kwargs)
-        self.dictionary = dictionary
-        self.percent = percent
-        self.key_range = key_range
-        self.separator = separator 
-
-    def calc_percent(self, words):
-        count = 0 
-        for x in words:
-            if x.lower() in self.dictionary:
-                count += 1
-        return count / len(words) 
-
-    def hacking(self, ciphertext):
-        potential_keys = {}
-        for k in range(1, self.key_range):
-            code_points = _shift_code_points(ciphertext, -k)
-            decrypted_txt = ''.join([chr(x) for x in code_points])
-            words = decrypted_txt.split(self.separator)
-            words_percent = self.calc_percent(words)
-            if words_percent > self.percent: 
-                potential_keys[k] = "{:.0%}".format(words_percent)
-        return potential_keys
+    for k in range(1, key_range):
+        code_points = _shift_code_points(my_bytes, -k)
+        decrypted_txt = code_points.decode()           # decode is only compatible with ASCII and will raise error if out of range. 
+        words = decrypted_txt.split(' ')
+        words_percent = calc_percent(words, dictionary)
+        if words_percent > percent:
+            return k
+    return 0 
+            

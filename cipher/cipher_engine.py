@@ -6,22 +6,21 @@ def _reverseCipher(plaintext):
     return ciphertext
 
 
-def _shift_code_points(text, n):
-    """
+def _shift_code_points(my_bytes, n):
+    """Updating bytes literals by shifting their code points by n. 
     Parameters
     ----------
-    text: text needed to be encrypted; string
-    n: number we need to add to code points of characters; in     Returns
-    -------
-    code_points: shifted code points; string
-    """
-    code_points = []     # shifted code point
-    for t in text:
-        if ord(t) > 1114111:
-            raise ValueError('The input character is beyond the range of Unicode encoding.')
-        code_points.append((ord(t) + n) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code point
+    my_bytes: bytes literal that are 
+    n: the number we need to add to the original code points; int    
 
-    return code_points
+    Returns 
+    -------
+    code_points: shifted code points; list of integer 
+    """
+    code_points = []     # list of number can be converted into bytes 
+    for b in my_bytes:   # each byte literal can return a integer after indexing correspond to the ASCII code 
+        code_points.append((b + n) % 256)    # decode method can only be applied to ACSII code points 
+    return bytes(code_points)              # bytes operation can be applied to a list of integer but not support encoding 
 
 
 class ReverseCipher(Cipher):
@@ -68,17 +67,20 @@ class CaesarCipher(Cipher):
         self.key = key
 
     def encrypt(self, plaintext):
-        if not isinstance(plaintext, str):
-            raise ValueError('Plaintext must be in string format.')
+        if isinstance(plaintext, str):
+            my_bytes = bytes(plaintext, encoding='utf-8', errors='strict') 
+        elif isinstance(plaintext, bytes):
+            my_bytes = plaintext
+        return _shift_code_points(my_bytes, self.key)
 
-        code_points = _shift_code_points(plaintext, self.key)
+    def decrypt(self, my_bytes):
+        if not isinstance(my_bytes, bytes):
+            raise ValueError('Input of decrypt must be bytes.')
+        new_bytes = _shift_code_points(my_bytes, -self.key)
+        return new_bytes.decode() 
 
-        return ''.join([chr(x) for x in code_points])
 
-    def decrypt(self, ciphertext):
-        if not isinstance(ciphertext, str):
-            raise ValueError('Ciphertext must be in string format.')
 
-        code_points = _shift_code_points(ciphertext, -self.key)
 
-        return ''.join([chr(x) for x in code_points])
+
+
