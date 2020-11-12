@@ -1,9 +1,27 @@
-from programming.cipher.cipher import Cipher
+from programming.cipher.base import Cipher
 
 
 def _reverseCipher(plaintext):
     ciphertext = plaintext[::-1]
     return ciphertext
+
+
+def _shift_code_points(text, n):
+    """
+    Parameters
+    ----------
+    text: text needed to be encrypted; string
+    n: number we need to add to code points of characters; in     Returns
+    -------
+    code_points: shifted code points; string
+    """
+    code_points = []     # shifted code point
+    for t in text:
+        if ord(t) > 1114111:
+            raise ValueError('The input character is beyond the range of Unicode encoding.')
+        code_points.append((ord(t) + n) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code point
+
+    return code_points
 
 
 class ReverseCipher(Cipher):
@@ -49,30 +67,11 @@ class CaesarCipher(Cipher):
             raise ValueError('Key has to be positive.')
         self.key = key
 
-    def shift_code_points(self, text, n):
-        """
-        Parameters
-        ----------
-        text: text needed to be encrypted; string
-        n: number we need to add to code points of characters; int
-
-        Returns
-        -------
-        code_points: shifted code points; string
-        """
-        code_points = []     # shifted code point
-        for t in text:
-            if ord(t) > 1114111:
-                raise ValueError('The input character is beyond the range of Unicode encoding.')
-            code_points.append((ord(t) + n) % 1114112)      # utf-8 is one of Unicode encoding schemes, which has 1114112 possible code points
-
-        return code_points
-
     def encrypt(self, plaintext):
         if not isinstance(plaintext, str):
             raise ValueError('Plaintext must be in string format.')
 
-        code_points = self.shift_code_points(plaintext, self.key)
+        code_points = _shift_code_points(plaintext, self.key)
 
         return ''.join([chr(x) for x in code_points])
 
@@ -80,6 +79,6 @@ class CaesarCipher(Cipher):
         if not isinstance(ciphertext, str):
             raise ValueError('Ciphertext must be in string format.')
 
-        code_points = self.shift_code_points(ciphertext, -self.key)
+        code_points = _shift_code_points(ciphertext, -self.key)
 
         return ''.join([chr(x) for x in code_points])
