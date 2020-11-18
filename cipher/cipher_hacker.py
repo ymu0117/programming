@@ -45,7 +45,8 @@ def transposition_arr_hacking(my_bytes, dictionary, percent, key_range):
     """Hacking transpositionCipherArr. 
     """
     for k in range(1, key_range):
-        inst = TranspositionCipherArr(k, word='_')
+        key = (k, '_') 
+        inst = TranspositionCipherArr(key)
         try: 
             decrypted_txt = inst.decrypt(my_bytes)
         except:

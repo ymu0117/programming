@@ -130,49 +130,48 @@ class TranspositionCipher(Cipher):
 class TranspositionCipherArr(Cipher):
     """Columnar transposition using numpy arr.
     """
-    def __init__(self, key, word='_', **kwargs):
+    def __init__(self, key: tuple, **kwargs):
         super().__init__(**kwargs)
-        if key < 0:
-            raise ValueError('Key has to be positive.')
-        self.key = key
-        self.word = word
+        self.key, self.word = key
 
-    def make_conformable_txt(self, txt):
+    def make_conformable_txt(self, txt: str) -> str:
         """Add chr to the plaintxt to make it conformable."""
         num_chr = len(txt)
         added_num_chr = self.key - num_chr % self.key
-        txt += self.word * added_num_chr
+        if len(self.word) < added_num_chr:
+            raise ValueError('Word length should be larger than key - 1.')
+        txt += self.word[:added_num_chr]
         return txt
 
     @staticmethod
-    def columnar_transposition(my_bytes, num_rows, num_cols):
+    def columnar_transposition(my_bytes: bytes, num_rows: int, num_cols: int) -> np.ndarray:
         arr = np.frombuffer(my_bytes, dtype=np.uint8)    # convert bytes to int
         reshaped_arr = arr.reshape([num_rows, num_cols])
-        transposed_arr = reshaped_arr.T
-        one_d_arr = np.ravel(transposed_arr)
-        return one_d_arr     # convert int to bytes, using tobytes gives a different format
+        return np.ravel(reshaped_arr.T)     # convert int to bytes, using tobytes gives a different format
 
-    def encrypt(self, plaintxt):
-        if not isinstance(plaintxt, str):
-            raise ValueError('Plaintext should be in string format.')
+    def find_pad(self, padded_txt):
+        for i in range(len(self.word)):
+            if i == 0:
+                idx = padded_txt.find(self.word)
+            else: 
+                idx = padded_txt.find(self.word[:-i])
+            if idx != -1:
+                return idx 
 
+    def encrypt(self, plaintxt: str) -> bytes:
         plaintxt = self.make_conformable_txt(plaintxt)
         my_bytes = bytes(plaintxt, encoding='utf-8', errors='strict')
-        self.num_rows = len(my_bytes)//self.key
-        one_d_arr = self.columnar_transposition(my_bytes, self.num_rows, self.key)
+        num_rows = len(my_bytes)//self.key
+        one_d_arr = self.columnar_transposition(my_bytes, num_rows, self.key)
         return one_d_arr.tobytes()
 
-    def decrypt(self, my_bytes):
-        if not isinstance(my_bytes, bytes):
-            raise ValueError('Input of decrypt should be in the bytes format.')
-
-        if self.num_rows is None:
-            self.num_rows = len(my_bytes)//self.key
-
-        if self.added_num_chr is None:       # when hacking added_num_chr is unknown and will be set to zero.
-            self.added_num_chr = 1
-
-        one_d_arr = self.columnar_transposition(my_bytes, self.key, self.num_rows)
+    def decrypt(self, my_bytes: bytes) -> str:
+        num_rows = len(my_bytes)//self.key
+        one_d_arr = self.columnar_transposition(my_bytes, self.key, num_rows)
         decrypted_bytes = one_d_arr.tobytes()
+        padded_txt = decrypted_bytes.decode(encoding='utf-8')
+        last_row_txt = padded_txt[-self.key:]
+        idx = self.find_pad(last_row_txt)
+        txt = padded_txt[:-self.key] + last_row_txt[:idx]
+        return txt 
 
-        return decrypted_bytes.decode(encoding='utf-8')[:-self.added_num_chr]
