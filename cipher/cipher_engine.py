@@ -83,50 +83,6 @@ class CaesarCipher(Cipher):
         return new_bytes.decode()
 
 
-class TranspositionCipher(Cipher):
-    """Columnar transposition, the message is written out in rows of a fixed length, and then
-    read out again column by column.
-    """
-    def __init__(self, key, word="null", **kwargs):
-        super().__init__(**kwargs)
-        if key < 0:
-            raise ValueError('Key has to be positive.')
-        self.key = key
-        self.word = word
-
-    @classmethod
-    def from_tuple(cls, key_word):
-        cls.key, cls.word = key_word
-        return cls
-
-    def columnar_transposition(self, my_bytes):
-        my_list = list(my_bytes)       # convert bytes to list of integers
-        two_d_list = convert_2d_list(my_list, self.key, self.word)
-        transposed_list = transpose_2d_list(two_d_list)
-        one_d_list = convert_1d_list(transposed_list)
-        return bytes(one_d_list)
-
-    def columnar_decrypt(self, my_bytes):
-        my_list = list(my_bytes)
-        two_d_list = convert_transpose_2d(my_list, self.key, self.word)
-        transposed_list = transpose_2d_list(two_d_list)
-        one_d_list = convert_1d_list(transposed_list)
-        return bytes(one_d_list)
-
-    def encrypt(self, plaintxt):
-        if isinstance(plaintxt, str):
-            my_bytes = bytes(plaintxt, encoding='utf-8', errors='strict')
-        elif isinstance(plaintxt, bytes):
-            my_bytes = plaintxt
-        return self.columnar_transposition(my_bytes)
-
-    def decrypt(self, my_bytes):
-        if not isinstance(my_bytes, bytes):
-            raise ValueError('Input of decrypt should be in the bytes format.')
-        decrypted_bytes = self.columnar_decrypt(my_bytes)
-        return decrypted_bytes.decode(encoding='utf-8')
-
-
 class TranspositionCipherArr(Cipher):
     """Columnar transposition using numpy arr.
     """

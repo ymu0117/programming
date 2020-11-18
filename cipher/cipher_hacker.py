@@ -1,5 +1,7 @@
 from programming.cipher.base import Hacker
-from programming.cipher.cipher_engine import CaesarCipher, TranspositionCipher, TranspositionCipherArr
+from programming.cipher.cipher_engine import CaesarCipher, TranspositionCipherArr
+from string import ascii_lowercase
+from random import choice 
 
 
 def calc_percent(words, dictionary):
@@ -26,33 +28,21 @@ def bruteforcehacking(my_bytes, dictionary, percent, key_range):
             return k
 
 
-def transposition_hacking(my_bytes, dictionary, percent, key_range):
-    """Hacking transpositionCipher. 
-    """
-    for k in range(1, key_range):
-        inst = TranspositionCipher(k, word='null')
-        try:
-            decrypted_txt = inst.decrypt(my_bytes)
-        except:
-            continue
-        words = decrypted_txt.split(' ')
-        words_percent = calc_percent(words, dictionary)
-        if words_percent > percent:
-            return k 
-
-
-def transposition_arr_hacking(my_bytes, dictionary, percent, key_range):
+def transposition_arr_hacking(my_bytes, dictionary, percent):
     """Hacking transpositionCipherArr. 
     """
-    for k in range(1, key_range):
-        key = (k, '_') 
+    for k in range(1, len(my_bytes)):
+        word = ''.join(choice(ascii_lowercase) for i in range(k))
+        key = (k, word) 
         inst = TranspositionCipherArr(key)
-        try: 
+        try:
             decrypted_txt = inst.decrypt(my_bytes)
-        except:
+        except ValueError:
+            print("ValueError: cannot reshape array.")
             continue 
         words = decrypted_txt.split(' ')
         words_percent = calc_percent(words, dictionary)
         if words_percent > percent:
             return k 
-    
+
+
