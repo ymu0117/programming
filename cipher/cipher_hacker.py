@@ -1,6 +1,5 @@
 from programming.cipher.base import Hacker
-from programming.cipher.cipher_engine import _shift_code_points
-from collections import defaultdict 
+from programming.cipher.cipher_engine import CaesarCipher, TranspositionCipher, TranspositionCipherArr
 
 
 def calc_percent(words, dictionary):
@@ -8,19 +7,51 @@ def calc_percent(words, dictionary):
     for x in words:
         if x.lower() in dictionary:
             count += 1
-    return count / len(words) 
+    return count / len(words)
 
 
 def bruteforcehacking(my_bytes, dictionary, percent, key_range):
     """
-    Hacking cipher bytes using brute force method 
+    Hacking cipher bytes using brute force method
     """
     for k in range(1, key_range):
-        code_points = _shift_code_points(my_bytes, -k)
-        decrypted_txt = code_points.decode()           # decode is only compatible with ASCII and will raise error if out of range. 
+        inst = CaesarCipher(key=k)
+        try:
+            decrypted_txt = inst.decrypt(my_bytes)
+        except:
+            continue 
         words = decrypted_txt.split(' ')
         words_percent = calc_percent(words, dictionary)
         if words_percent > percent:
             return k
-    return 0 
-            
+
+
+def transposition_hacking(my_bytes, dictionary, percent, key_range):
+    """Hacking transpositionCipher. 
+    """
+    for k in range(1, key_range):
+        inst = TranspositionCipher(k, word='null')
+        try:
+            decrypted_txt = inst.decrypt(my_bytes)
+        except:
+            continue
+        words = decrypted_txt.split(' ')
+        words_percent = calc_percent(words, dictionary)
+        if words_percent > percent:
+            return k 
+
+
+def transposition_arr_hacking(my_bytes, dictionary, percent, key_range):
+    """Hacking transpositionCipherArr. 
+    """
+    for k in range(1, key_range):
+        inst = TranspositionCipherArr(k, word='_')
+        try: 
+            decrypted_txt = inst.decrypt(my_bytes)
+        except:
+            continue 
+        words = decrypted_txt.split(' ')
+        words_percent = calc_percent(words, dictionary)
+        if words_percent > percent:
+            return k 
+    

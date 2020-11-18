@@ -150,3 +150,4 @@ def test_CipherHackerBruteForce_paragraph():
     keys = inst.hacking(ciphertext)
     key_list = [x for x in keys.keys()]
     assert 200 in key_list 
+
