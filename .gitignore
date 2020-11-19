@@ -13,3 +13,7 @@ __pycache__/
 dcp/*
 
 .gitignore
+
+cipher/reference
+cipher/notes
+cipher/notebooks

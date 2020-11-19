@@ -131,3 +131,28 @@ class TranspositionCipherArr(Cipher):
         txt = padded_txt[:-self.key] + last_row_txt[:idx]
         return txt 
 
+
+class SubstitutionCipher(Cipher):
+    """Substitution Cipher"""
+    def __init__(self, key: dict, **kwargs):
+        self.key = key 
+
+    def encrypt(self, plaintxt: str) -> bytes:
+        cipher = []
+        for t in plaintxt:
+            try: 
+                cipher.append(self.key[t])
+            except KeyError:
+                cipher.append(t)
+        return ''.join(cipher)
+
+    def decrypt(self, ciphertxt: bytes) -> str:
+        reverse_key = {v: k for k, v in self.key.items()}
+        decrypted_txt = []
+        for t in ciphertxt:
+            try:
+                decrypted_txt.append(reverse_key[t])
+            except KeyError:
+                decrypted_txt.append(t)
+        return ''.join(decrypted_txt) 
+

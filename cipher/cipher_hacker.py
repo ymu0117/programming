@@ -46,3 +46,6 @@ def transposition_arr_hacking(my_bytes, dictionary, percent):
             return k 
 
 
+def substitution_hacking(ciphertxt, percent):
+    """Hacking Substitution Cipher."""
+    pass 
