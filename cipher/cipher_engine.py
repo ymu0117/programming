@@ -134,25 +134,28 @@ class TranspositionCipherArr(Cipher):
 
 class SubstitutionCipher(Cipher):
     """Substitution Cipher"""
-    def __init__(self, key: dict, **kwargs):
-        self.key = key 
+    def __init__(self, key: dict, case_sensitive=False, **kwargs):
+        self.key = key
+        self.case_sensitive = case_sensitive #When case sensitive is false, we will map same letter to uppercase and lowercase 
 
-    def encrypt(self, plaintxt: str) -> bytes:
-        cipher = []
-        for t in plaintxt:
-            try: 
-                cipher.append(self.key[t])
-            except KeyError:
-                cipher.append(t)
-        return ''.join(cipher)
-
-    def decrypt(self, ciphertxt: bytes) -> str:
-        reverse_key = {v: k for k, v in self.key.items()}
-        decrypted_txt = []
-        for t in ciphertxt:
+#     @staticmethod 
+    def convert_txt(self, txt: str, key_map) -> str:
+        converted_txt = []
+        for t in txt:
             try:
-                decrypted_txt.append(reverse_key[t])
+                if not self.case_sensitive and t.isupper():
+                    converted_txt.append(key_map[t.lower()].upper())
+                else: 
+                    converted_txt.append(key_map[t])
             except KeyError:
-                decrypted_txt.append(t)
-        return ''.join(decrypted_txt) 
+                converted_txt.append(t)
+        return ''.join(converted_txt)
+
+    def encrypt(self, plaintxt: str) -> str:
+        return self.convert_txt(plaintxt, self.key)
+
+    def decrypt(self, ciphertxt: str) -> str:
+        reverse_key = {v: k for k, v in self.key.items()}
+        return self.convert_txt(ciphertxt, reverse_key)
+
 
