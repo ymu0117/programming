@@ -1,7 +1,9 @@
-from programming.cipher.base import Cipher
-from programming.cipher.utils import convert_2d_list, transpose_2d_list, convert_1d_list, convert_transpose_2d
+from cipher.base import Cipher
+from cipher.utils import convert_2d_list, transpose_2d_list, convert_1d_list, convert_transpose_2d
 import math
 import numpy as np
+from cipher.exceptions import InvalidKey
+import random 
 
 
 def _reverseCipher(plaintext):
@@ -133,22 +135,41 @@ class TranspositionCipherArr(Cipher):
 
 
 class SubstitutionCipher(Cipher):
-    """Substitution Cipher"""
-    def __init__(self, key: dict, case_sensitive=False, **kwargs):
+    """Substitution Cipher
+    
+    Parameters
+    ----------
+    key: dictionary, can only be generated from ascii_lowercase
+    """
+    def __init__(self, key: dict, **kwargs):
         self.key = key
-        self.case_sensitive = case_sensitive #When case sensitive is false, we will map same letter to uppercase and lowercase 
+        SubstitutionCipher.verify_key(key)
+        
+    @staticmethod 
+    def verify_key(key):
+        alphabet, substitution = list(zip(*key.items()))
+        if not ''.join(alphabet).islower() or not ''.join(substitution).islower():
+            raise InvalidKey
 
-#     @staticmethod 
+    @classmethod
+    def from_alphabet(cls, alphabet):
+        """Alternative constructor from alphabet. 
+        """
+        substitution = ''.join(random.sample(alphabet, len(alphabet)))
+        key = dict(zip(alphabet, substitution))
+        SubstitutionCipher.verify_key(key)
+        return cls(key)  
+
     def convert_txt(self, txt: str, key_map) -> str:
         converted_txt = []
         for t in txt:
             try:
-                if not self.case_sensitive and t.isupper():
+                if t.isupper():
                     converted_txt.append(key_map[t.lower()].upper())
                 else: 
                     converted_txt.append(key_map[t])
             except KeyError:
-                converted_txt.append(t)
+                converted_txt.append(t)    # for chr not in key_map keep it as is 
         return ''.join(converted_txt)
 
     def encrypt(self, plaintxt: str) -> str:
@@ -157,5 +178,4 @@ class SubstitutionCipher(Cipher):
     def decrypt(self, ciphertxt: str) -> str:
         reverse_key = {v: k for k, v in self.key.items()}
         return self.convert_txt(ciphertxt, reverse_key)
-
 
