@@ -40,31 +40,125 @@ def transposition_arr_hacking(my_bytes, dictionary, percent):
             return k 
 
 
-def substitution_hacking(ciphertxt:str, pattern_map:dict)->str:
-    """Hacking Substitution Cipher."""
-    words = simple_extract_words(ciphertxt)
-    letter_map_tables = []
-    for w in words:
-        table = cipher_word2table(w, pattern_map)
-        letter_map_tables.append(table)
-
-    intersected_table = {}
-    # for each common key find the intersection
-    for l in range(len(letter_map_tables)):
-        intersected_table = update_intersected_table(intersected_table, letter_map_tables[l])
-
-    solved_mapping, unsolved_mapping = get_solved_mapping(intersected_table) 
-
-    decrypted_txt = convert_txt(ciphertxt, solved_mapping)
-
-    return decrypted_txt 
-
-
 class SubstitutionHacker(Hacker):
+    """
+    Parameters
+    ----------
+    case_type: case insensitive or sensitive for hacking, options = {'insensitive', 'sensitive'}
+    alphabet: the alphabet we used to hacking the ciphertxt. 
+    """
 
-    def __init__(self):
-        pass
+    def __init__(self, case_type, alphabet):
+        self.case_type = case_type
+        self.alphabet = alphabet
 
-    def hacking(self):
-        pass 
+    def verify_case(self, word):
+        if self.case_type == 'insensitive':
+            return word.lower() 
+        elif case_type == 'sensitive':
+            return word 
+        else:
+            raise ValueError('Case type is not defined.')
+
+    def word2pattern(self, word):
+        """Convert word to pattern. 
+        For example, for word 'abandon', the pattern will 
+        be '0.1.0.2.3.4.2'
+        Parameters
+        ----------
+        word: str
+        """
+        word = self.verify_case(word)
+        pattern = []
+        int_map = {}
+        i = 0
+        for w in word:
+            if w not in int_map:
+                int_map[w] = str(i) 
+                i += 1
+            pattern.append(int_map[w])
+        return '.'.join(pattern)
     
+    def create_pattern_map(self, dictionary):
+        """Map words in the defined dictionary to patterns. 
+        """
+        pattern_map = {}
+        for k in dictionary.keys():
+            pattern = self.word2pattern(k)
+            if pattern not in pattern_map:
+                pattern_map[pattern] = []
+            pattern_map[pattern].append(k) 
+        return pattern_map
+
+    @staticmethod 
+    def txt2words(txt):
+        """Using re.compile to extract words. 
+        """
+        pattern = re.compile('[^A-Za-z\s]')
+        return pattern.sub('', txt).split()
+
+    def word2table(self, word, pattern_map):
+        """Map cipherword to a dictionary, where each letter of the 
+        cipherword will have a list of values that correspond to the words 
+        in the dictionary that have same pattern. 
+        """
+        word = self.verify_case(word) 
+        pattern = self.word2pattern(word)
+        table = {letter: [] for letter in self.alphabet} 
+        for i, w in enumerate(word):
+            for candidate in pattern_map[pattern]:
+                if candidate[i] not in table[w]: 
+                    table[w].append(candidate[i])
+        return table
+
+    def get_intersected_table(self, tables):
+        intersected_table = {letter: [] for letter in self.alphabet}
+        for letter in intersected_table.keys():
+            for table in tables:
+                if table[letter] and intersected_table[letter]:
+                    intersected_table[letter] = list(set(intersected_table[letter]).intersection(set(table[letter])))
+                elif table[letter] and not intersected_table[letter]:
+                    intersected_table[letter].extend(table[letter])
+                else:
+                    continue
+        return intersected_table 
+
+    @staticmethod 
+    def get_solved_mapping(table):
+        solved_map = {}
+        unsolved_map = {}
+        for k, v in table.items():
+            if len(v) == 1:
+                solved_map[k] = v
+            else:
+                unsolved_map[k] = v
+        return solved_map, unsolved_map
+
+    def convert_txt(self, txt, solved_map):
+        converted_txt = []
+        for t in txt:
+            try: 
+                if self.case_type == 'insensitive' and t.isupper():
+                    letter = list(solved_map[t.lower()])[0]
+                    converted_txt.append(letter.upper())
+                else:
+                    letter = list(solved_map[t])[0]
+                    converted_txt.append(letter) 
+            except KeyError:
+                converted_txt.append(t)
+                continue            
+        return ''.join(converted_txt)
+
+    def hacking(self, ciphertxt, dictionary):
+        pattern_map = self.create_pattern_map(dictionary)
+        words = self.txt2words(ciphertxt)
+
+        tables = []
+        for w in words:
+            table = self.word2table(w, pattern_map)
+            tables.append(table)
+
+        intersected_table = self.get_intersected_table(tables)
+        self.solved_mapping, self.unsolved_mapping = self.get_solved_mapping(intersected_table) 
+        self.hacked_txt = self.convert_txt(ciphertxt, self.solved_mapping)
+        return self 
