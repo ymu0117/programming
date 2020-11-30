@@ -148,7 +148,7 @@ class SubstitutionCipher(Cipher):
     @staticmethod 
     def verify_key(key):
         alphabet, substitution = list(zip(*key.items()))
-        if not ''.join(alphabet).islower() or not ''.join(substitution).islower():
+        if not ''.join(sorted(alphabet)) == ''.join(sorted(substitution)):
             raise InvalidKey
 
     @classmethod
