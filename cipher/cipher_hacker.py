@@ -104,11 +104,14 @@ class SubstitutionHacker(Hacker):
         """
         word = self.verify_case(word) 
         pattern = self.word2pattern(word)
-        table = {letter: [] for letter in self.alphabet} 
+        table = {letter: [] for letter in self.alphabet}
         for i, w in enumerate(word):
-            for candidate in pattern_map[pattern]:
-                if candidate[i] not in table[w]: 
-                    table[w].append(candidate[i])
+            try: 
+               for candidate in pattern_map[pattern]:
+                   if candidate[i] not in table[w]: 
+                       table[w].append(candidate[i])
+            except KeyError:
+                raise ValueError('Given dictionary doesnt have words matching this pattern.')
         return table
 
     def get_intersected_table(self, tables):
@@ -145,7 +148,10 @@ class SubstitutionHacker(Hacker):
                     letter = list(solved_map[t])[0]
                     converted_txt.append(letter) 
             except KeyError:
-                converted_txt.append(t)
+                if t == ' ': 
+                    converted_txt.append(t)
+                else:
+                    converted_txt.append('_')
                 continue            
         return ''.join(converted_txt)
 
