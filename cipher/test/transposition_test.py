@@ -2,7 +2,8 @@ from programming.cipher.cipher_hacker import transposition_arr_hacking
 from programming.cipher.word import load_dictionary, load_Webster
 from programming.cipher.cipher_engine import TranspositionCipherArr
 from random import choice
-from string import ascii_lowercase 
+from string import ascii_lowercase
+from cipher.utils import convert_2d_list, transpose_2d_list 
 
 
 def test_convert_2d_list():

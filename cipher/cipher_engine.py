@@ -3,7 +3,7 @@ from cipher.utils import convert_2d_list, transpose_2d_list, convert_1d_list, co
 import math
 import numpy as np
 from cipher.exceptions import InvalidKey
-import random 
+import random
 
 
 def _reverseCipher(plaintext):
@@ -111,10 +111,10 @@ class TranspositionCipherArr(Cipher):
         for i in range(len(self.word)):
             if i == 0:
                 idx = padded_txt.find(self.word)
-            else: 
+            else:
                 idx = padded_txt.find(self.word[:-i])
             if idx != -1:
-                return idx 
+                return idx
 
     def encrypt(self, plaintxt: str) -> bytes:
         plaintxt = self.make_conformable_txt(plaintxt)
@@ -131,12 +131,12 @@ class TranspositionCipherArr(Cipher):
         last_row_txt = padded_txt[-self.key:]
         idx = self.find_pad(last_row_txt)
         txt = padded_txt[:-self.key] + last_row_txt[:idx]
-        return txt 
+        return txt
 
 
 class SubstitutionCipher(Cipher):
     """Substitution Cipher
-    
+
     Parameters
     ----------
     key: dictionary, can only be generated from ascii_lowercase
@@ -144,8 +144,8 @@ class SubstitutionCipher(Cipher):
     def __init__(self, key: dict, **kwargs):
         self.key = key
         SubstitutionCipher.verify_key(key)
-        
-    @staticmethod 
+
+    @staticmethod
     def verify_key(key):
         alphabet, substitution = list(zip(*key.items()))
         if not ''.join(sorted(alphabet)) == ''.join(sorted(substitution)):
@@ -153,29 +153,29 @@ class SubstitutionCipher(Cipher):
 
     @classmethod
     def from_alphabet(cls, alphabet):
-        """Alternative constructor from alphabet. 
+        """Alternative constructor from alphabet.
         """
         substitution = ''.join(random.sample(alphabet, len(alphabet)))
         key = dict(zip(alphabet, substitution))
         SubstitutionCipher.verify_key(key)
-        return cls(key)  
+        return cls(key)
 
-    def convert_txt(self, txt: str, key_map) -> str:
+    def _convert_txt(self, txt: str, key_map) -> str:
         converted_txt = []
         for t in txt:
             try:
                 if t.isupper():
                     converted_txt.append(key_map[t.lower()].upper())
-                else: 
+                else:
                     converted_txt.append(key_map[t])
             except KeyError:
-                converted_txt.append(t)    # for chr not in key_map keep it as is 
+                converted_txt.append(t)    # for chr not in key_map keep it as is
         return ''.join(converted_txt)
 
     def encrypt(self, plaintxt: str) -> str:
-        return self.convert_txt(plaintxt, self.key)
+        return self._convert_txt(plaintxt, self.key)
 
     def decrypt(self, ciphertxt: str) -> str:
-        reverse_key = {v: k for k, v in self.key.items()}
-        return self.convert_txt(ciphertxt, reverse_key)
+        reverse_key = {v: k for k, v in self.key.items()}    # move it to constructor
+        return self._convert_txt(ciphertxt, reverse_key)
 
