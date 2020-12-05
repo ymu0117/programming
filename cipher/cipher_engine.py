@@ -144,11 +144,11 @@ class SubstitutionCipher(Cipher):
     def __init__(self, key: dict, **kwargs):
         self.key = key
         SubstitutionCipher.verify_key(key)
+        self.reverse_key = {v: k for k, v in self.key.items()}
 
     @staticmethod
     def verify_key(key):
-        alphabet, substitution = list(zip(*key.items()))
-        if not ''.join(sorted(alphabet)) == ''.join(sorted(substitution)):
+        if not ''.join(sorted(key.keys())) == ''.join(sorted(key.values())):
             raise InvalidKey
 
     @classmethod
@@ -176,6 +176,5 @@ class SubstitutionCipher(Cipher):
         return self._convert_txt(plaintxt, self.key)
 
     def decrypt(self, ciphertxt: str) -> str:
-        reverse_key = {v: k for k, v in self.key.items()}    # move it to constructor
-        return self._convert_txt(ciphertxt, reverse_key)
+        return self._convert_txt(ciphertxt, self.reverse_key)
 
