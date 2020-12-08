@@ -178,3 +178,8 @@ class SubstitutionCipher(Cipher):
     def decrypt(self, ciphertxt: str) -> str:
         return self._convert_txt(ciphertxt, self.reverse_key)
 
+
+class VigenereCipher(Cipher):
+    def __init__(self, key, **kwargs):
+        self.key = key
+        

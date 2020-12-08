@@ -51,7 +51,6 @@ def substitution_hacking(ciphertxt, dictionary, case_type, alphabet):
     intersected_table = get_intersected_table(tables, alphabet)
     solved_mapping, unsolved_mapping = get_solved_mapping(intersected_table)
     solved_mapping, unsolved_mapping = reduce_unsolved_mapping(solved_mapping, unsolved_mapping)
-    
     hacked_txt = convert_txt(ciphertxt, solved_mapping, case_type)
     return hacked_txt, solved_mapping, unsolved_mapping
 
