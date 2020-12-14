@@ -28,7 +28,7 @@ def transposition_arr_hacking(my_bytes, dictionary, percent):
     """Hacking transpositionCipherArr.
     """
     candidate_key_len = find_factors(len(my_bytes))
-    for k in candidate_key_len:   
+    for k in candidate_key_len:
         word = ''.join(choice(ascii_lowercase) for i in range(k))
         key = (k, word)
         inst = TranspositionCipherArr(key)
@@ -42,12 +42,12 @@ def transposition_arr_hacking(my_bytes, dictionary, percent):
 def substitution_hacking(ciphertxt, dictionary, case_type, alphabet):
     pattern_map = create_pattern_map(dictionary, case_type)
     words = txt2words(ciphertxt)
-    
+
     tables = []
     for w in words:
         table = word2table(w, case_type, pattern_map, alphabet)
         tables.append(table)
-        
+
     intersected_table = get_intersected_table(tables, alphabet)
     solved_mapping, unsolved_mapping = get_solved_mapping(intersected_table)
     solved_mapping, unsolved_mapping = reduce_unsolved_mapping(solved_mapping, unsolved_mapping)

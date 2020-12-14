@@ -1,25 +1,25 @@
 """
-Define helper functions 
+Define helper functions
 """
-import math 
+import math
 import re
-from functools import reduce 
+from functools import reduce
 
 
 def convert_2d_list(my_list, key, word):
-    """Convert 1d list to 2d list, 
-    each row has key elements and pad with word 
-    to make rectangular shape. 
+    """Convert 1d list to 2d list,
+    each row has key elements and pad with word
+    to make rectangular shape.
     """
     remainder = len(my_list) % key
     my_list.extend([word] * remainder)
     num_rows = len(my_list) // key
-    two_d_list = [[my_list[j*key+i] for i in range(key)] for j in range(num_rows)] 
+    two_d_list = [[my_list[j*key+i] for i in range(key)] for j in range(num_rows)]
     return two_d_list
 
 
 def transpose_2d_list(two_d_list):
-    """Transpose 2d list. 
+    """Transpose 2d list.
     """
     row = len(two_d_list)
     col = len(two_d_list[0])
@@ -29,15 +29,15 @@ def transpose_2d_list(two_d_list):
 
 
 def convert_1d_list(two_d_list):
-    """Convert two dimensional list to one dimension and remove padding words. 
+    """Convert two dimensional list to one dimension and remove padding words.
     """
     row = len(two_d_list)
-    col = len(two_d_list[0]) 
+    col = len(two_d_list[0])
     return [two_d_list[x][y] for x in range(row) for y in range(col) if not isinstance(two_d_list[x][y], str)]
 
 
 def convert_transpose_2d(my_list, key, word):
-    """Convert transposition cipher to 2 d list. 
+    """Convert transposition cipher to 2 d list.
     """
     remainder = key - len(my_list) % key
     col = math.ceil(len(my_list)/key)
@@ -61,8 +61,8 @@ def calc_percent(words, dictionary):
 
 
 def simple_extract_words(txt):
-    """Extracting words using re, assuming white space and symbols 
-    are preserved when being entryped  
+    """Extracting words using re, assuming white space and symbols
+    are preserved when being entryped
     """
     return re.findall(r'\w+', txt)
 
@@ -124,10 +124,7 @@ def txt2words(txt):
 def english_check(character):
     eng_check = re.compile(r'[a-zA-Z]')
 
-    if eng_check.match(character):
-        return True 
-    else:
-        return False 
+    return eng_check.match(character) is not None
 
 
 def word2table(word, case_type, pattern_map, alphabet):
@@ -139,9 +136,9 @@ def word2table(word, case_type, pattern_map, alphabet):
     pattern = word2pattern(word, case_type)
     table = {letter: set() for letter in alphabet}
     for i, w in enumerate(word):
-        try: 
+        try:
             table[w] = set([candidate_word[i] for candidate_word in pattern_map[pattern]])
-        except KeyError: 
+        except KeyError:
             raise ValueError("Given dictionary doesnt have words matching this pattern.")
     return table
 
@@ -180,24 +177,24 @@ def remove_mapped(values, solved_chrs):
     for v in values:
         if v in solved_chrs:
             values.remove(v)
-    return values 
+    return values
 
 
 def reduce_unsolved_mapping(solved_mapping, unsolved_mapping):
-    """Remove unsolved_mapping that has been appeared in the solved_mapping. 
+    """Remove unsolved_mapping that has been appeared in the solved_mapping.
     """
     mapped_chrs = solved_mapping.values()
     updated_unsolved_mapping = {}
     for k, v in unsolved_mapping.items():
-        if v:      # if there are elements in k, remove those in the solved ones 
+        if v:      # if there are elements in k, remove those in the solved ones
             v = remove_mapped(v, mapped_chrs)
             if len(v) == 1:     # if after removal there is unique, then we found new solved mapping
                 solved_mapping[k] = v[0]
             else:
-                updated_unsolved_mapping[k] = v     # if not, it's still unsolved mapping 
+                updated_unsolved_mapping[k] = v     # if not, it's still unsolved mapping
         else:
-            updated_unsolved_mapping[k] = v 
-    return solved_mapping, updated_unsolved_mapping 
+            updated_unsolved_mapping[k] = v
+    return solved_mapping, updated_unsolved_mapping
 
 
 def convert_txt(txt, solved_map, case_type):

@@ -4,6 +4,7 @@ import math
 import numpy as np
 from cipher.exceptions import InvalidKey
 import random
+from string import ascii_lowercase
 
 
 def _reverseCipher(plaintext):
@@ -143,12 +144,11 @@ class SubstitutionCipher(Cipher):
     """
     def __init__(self, key: dict, **kwargs):
         self.key = key
-        SubstitutionCipher.verify_key(key)
+        self.verify_key()
         self.reverse_key = {v: k for k, v in self.key.items()}
 
-    @staticmethod
-    def verify_key(key):
-        if not ''.join(sorted(key.keys())) == ''.join(sorted(key.values())):
+    def verify_key(self):
+        if not ''.join(sorted(self.key.keys())) == ''.join(sorted(self.key.values())):
             raise InvalidKey
 
     @classmethod
@@ -180,6 +180,41 @@ class SubstitutionCipher(Cipher):
 
 
 class VigenereCipher(Cipher):
-    def __init__(self, key, **kwargs):
+    def __init__(self, key: str, **kwargs):
         self.key = key
-        
+        self.check_key()
+        self.key_len = len(self.key)
+        self.key_int_map = dict(zip(ascii_lowercase, range(26)))
+        self.key2int()
+
+    def check_key(self):
+        """Assuming all the keys are lowercase for simplicity
+        """
+        if not self.key.islower():
+            raise InvalidKey
+
+    def key2int(self):
+        self.ints = [self.key_int_map[x] for x in self.key]    # iceabcream = [8, 2, 0, 1, ...]
+        self.negative_ints = [-self.key_int_map[x] for x in self.key]
+
+    def shift_bytes(self, my_bytes, integers):
+        all_code_points = []
+        for i, code_point in enumerate(my_bytes):
+            n = i % self.key_len
+            new_code_point = (code_point + integers[n]) % 256
+            all_code_points.append(new_code_point)
+        return bytes(all_code_points)
+
+    def encrypt(self, plaintxt):
+        if isinstance(plaintxt, str):
+            my_bytes = bytes(plaintxt, encoding='utf-8', errors='strict')
+        elif isinstance(plaintxt, bytes):
+            my_bytes = plaintxt
+        return self.shift_bytes(my_bytes, self.ints)
+
+    def decrypt(self, my_bytes):
+        if not isinstance(my_bytes, bytes):
+            raise ValueError('Input of decrypt must be bytes.')
+        return self.shift_bytes(my_bytes, self.negative_ints).decode()
+
+
